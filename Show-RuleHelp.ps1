@@ -37,10 +37,22 @@ function Show-RuleHelp
 	{
 		$URLName = $Name -replace "^PS", ""
 		$URL = "https://github.com/PowerShell/PSScriptAnalyzer/blob/development/RuleDocumentation/$URLName.md"
-		Start-Process $URL
-	}
-	else
-	{
-		"Invalid rule name: $Name"	
+		
+		try
+		{
+			$null = Invoke-WebRequest $url -DisableKeepAlive -UseBasicParsing -Method head
+			Start-Process $URL
+		}
+		catch [System.Net.WebException]
+		{
+			if ($_.Exception -like "*404*")
+			{
+				Write-Error "No online help for rule: $Name"
+			}
+			else
+			{
+				Write-Error "Cannot connect to Script Analyzer online."
+			}
+		}
 	}
 }
