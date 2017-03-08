@@ -10,27 +10,33 @@
 #>
 
 
-
 <#
-	.SYNOPSIS
-		Opens rules help online
-	
-	.DESCRIPTION
-		Show-RuleHelp displays online help for a PSScriptAnalyzer rule in the default internet browser.
-	
-	.PARAMETER Name
-		A description of the Name parameter.
-	
-	.EXAMPLE
-		PS C:\> Show-RuleHelp -Name PSMisleadingBacktick
-		
-		.EXAMPLE\
-		
-		
-		PS C:\> Get-ScriptAnalyzerRule  | Show-RuleHelp -Name PSMisleadingBacktick
-	
-	.NOTES
-		Additional information about the function.
+.SYNOPSIS
+Opens rule help online.
+
+.DESCRIPTION
+Show-RuleHelp displays online help for a PSScriptAnalyzer rule in the default internet browser.
+
+The online help is in the GitHub repo for the PSScriptAnalyzer project:  https://github.com/PowerShell/PSScriptAnalyzer/blob/development/RuleDocumentation
+
+The function generates an error if the rule name is invalid, no help exists for the rule, or the function cannot connect to the site.
+
+.PARAMETER Name
+Specifies the rule name. Enter a name or name pattern. You can also pipe rule names to Show-RuleHelp, such as from Get-ScriptAnalyzer rule.
+
+If the pattern matches multiple rule names, Show-RuleHelp opens a browser window for each help topic. 
+
+.EXAMPLE 
+PS C:\> Show-RuleHelp -Name PSMisleadingBacktick
+
+.EXAMPLE
+PS C:\> Get-ScriptAnalyzerRule -Name PSMisleadingBacktick | Show-RuleHelp
+
+.EXAMPLE
+PS C:\> Show-RuleHelp -Name *Backtick*
+
+.INPUTS
+System.String, Microsoft.Windows.PowerShell.ScriptAnalyzer.Generic.RuleInfo
 #>
 function Show-RuleHelp
 {
@@ -49,9 +55,8 @@ function Show-RuleHelp
 	}
 	PROCESS
 	{
-		Write-Verbose "Stop here"
-		
-		# $ruleName might be a wildcard pattern
+		# $ruleName can be a wildcard pattern that matches multiple rule names
+		#     No error handling because Get-ScriptAnalyzerRule does not generate errors
 		if ($rules = Get-ScriptAnalyzerRule -Name $Name)
 		{
 			foreach ($rule in $rules)
